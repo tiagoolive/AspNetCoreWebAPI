@@ -1,31 +1,39 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using SmartSchool.API.Data;
-using SmartSchool.API.Dtos;
 using SmartSchool.API.Models;
-using System;
+using SmartSchool.API.V2.Dtos;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace SmartSchool.API.Controllers
+namespace SmartSchool.API.V2.Controllers
 {
-    [Route("api/[controller]")]
+    /// <summary>
+    /// Versão 2 do controlador de alunos
+    /// </summary>
+    /// 
+    [ApiVersion("2.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class AlunoController : ControllerBase
     {
         public readonly IRepository _repo;
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="repo"></param>
+        /// <param name="mapper"></param>
         public AlunoController(IRepository repo, IMapper mapper)
         {
             _repo = repo;
             _mapper = mapper;
         }
 
-
+        /// <summary>
+        /// Método responsavel para retornar todos os alunos
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult Get()
         {
@@ -34,12 +42,12 @@ namespace SmartSchool.API.Controllers
             return Ok(_mapper.Map<IEnumerable<AlunoDto>>(alunos));
         }
 
-        [HttpGet("getRegister")]
-        public IActionResult GetRegister()
-        {
-            return Ok(new AlunoRegistrarDto());
-        }
 
+        /// <summary>
+        /// Método responstável por retornar apenas um Aluno por meio do código Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
@@ -51,6 +59,11 @@ namespace SmartSchool.API.Controllers
             return Ok(alunoDto);
         }
 
+        /// <summary>
+        /// Método responsável por criar um novo aluno
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult Post(AlunoRegistrarDto model)
         {
@@ -82,22 +95,6 @@ namespace SmartSchool.API.Controllers
             return BadRequest("Aluno não atualizado");
         }
 
-        [HttpPatch("{id}")]
-        public IActionResult Patch(AlunoRegistrarDto model, int id)
-        {
-            var aluno = _repo.GetAlunoById(id);
-            if (aluno == null) return BadRequest("aluno não encontrado");
-
-            _mapper.Map(model, aluno);
-
-            _repo.Update(aluno);
-            if (_repo.SaveChanges())
-            {
-                return Created($"/api/aluno/{model.Id}", _mapper.Map<AlunoDto>(aluno));
-            }
-
-            return BadRequest("Aluno não atualizado");
-        }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
