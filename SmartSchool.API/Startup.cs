@@ -31,7 +31,7 @@ namespace SmartSchool.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<SmartContext>(
-                services => services.UseSqlite(Configuration.GetConnectionString("Default"))   
+                services => services.UseMySql(Configuration.GetConnectionString("MySqlConnection"))   
             );
 
             services.AddControllers().AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
