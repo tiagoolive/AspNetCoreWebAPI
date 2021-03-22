@@ -4,6 +4,7 @@ using SmartSchool.API.Data;
 using SmartSchool.API.Helpers;
 using SmartSchool.API.Models;
 using SmartSchool.API.V1.Dtos;
+using SmartSchool.WebAPI.Helpers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -52,6 +53,17 @@ namespace SmartSchool.API.V1.Controllers
         /// Método responsável por retornar apenas um único alunoDTO.
         /// </summary>
         /// <returns></returns>
+        [HttpGet("ByDisciplina/{id}")]
+        public async Task<IActionResult> GetDisciplinaId(int id)
+        {
+            var result = await _repo.GetAllAlunosByDisciplinaIdAsync(id, false);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Método responsável por retornar apenas um único alunoDTO.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("getRegister")]
         public IActionResult GetRegister()
         {
@@ -69,7 +81,7 @@ namespace SmartSchool.API.V1.Controllers
             var aluno = _repo.GetAlunoById(id, false);
             if (aluno == null) return BadRequest("aluno não encontrado");
 
-            var alunoDto = _mapper.Map<AlunoDto>(aluno);
+            var alunoDto = _mapper.Map<AlunoRegistrarDto>(aluno);
 
             return Ok(alunoDto);
         }
@@ -94,7 +106,7 @@ namespace SmartSchool.API.V1.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(AlunoRegistrarDto model, int id)
+        public IActionResult Put(int id, AlunoRegistrarDto model)
         {
             var aluno = _repo.GetAlunoById(id, false);
             if (aluno == null) return BadRequest("aluno não encontrado");
@@ -111,7 +123,7 @@ namespace SmartSchool.API.V1.Controllers
         }
 
         [HttpPatch("{id}")]
-        public IActionResult Patch(AlunoRegistrarDto model, int id)
+        public IActionResult Patch(int id, AlunoPatchDto model)
         {
             var aluno = _repo.GetAlunoById(id);
             if (aluno == null) return BadRequest("aluno não encontrado");
@@ -121,7 +133,25 @@ namespace SmartSchool.API.V1.Controllers
             _repo.Update(aluno);
             if (_repo.SaveChanges())
             {
-                return Created($"/api/aluno/{model.Id}", _mapper.Map<AlunoDto>(aluno));
+                return Created($"/api/aluno/{model.Id}", _mapper.Map<AlunoPatchDto>(aluno));
+            }
+
+            return BadRequest("Aluno não atualizado");
+        }
+
+        [HttpPatch("{id}/trocarEstado")]
+        public IActionResult trocarEstado(int id, TrocaEstadoDto trocaEstado)
+        {
+            var aluno = _repo.GetAlunoById(id);           
+            if (aluno == null) return BadRequest("aluno não encontrado");
+
+            aluno.Ativo = trocaEstado.Estado;
+
+            _repo.Update(aluno);
+            if (_repo.SaveChanges())
+            {
+                var msn = aluno.Ativo ? "ativado" : "desativado";
+                return Ok(new { message = $"Aluno {msn} com sucesso!" });
             }
 
             return BadRequest("Aluno não atualizado");

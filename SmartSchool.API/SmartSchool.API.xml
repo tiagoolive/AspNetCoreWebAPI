@@ -23,6 +23,12 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:SmartSchool.API.V1.Controllers.AlunoController.GetDisciplinaId(System.Int32)">
+            <summary>
+            Método responsável por retornar apenas um único alunoDTO.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:SmartSchool.API.V1.Controllers.AlunoController.GetRegister">
             <summary>
             Método responsável por retornar apenas um único alunoDTO.
@@ -66,6 +72,16 @@
         <member name="P:SmartSchool.API.V1.Dtos.AlunoDto.Idade">
             <summary>
             Esta idade é um calculo relacionado a data de nascimento do Aluno
+            </summary>
+        </member>
+        <member name="P:SmartSchool.API.V1.Dtos.AlunoPatchDto.Id">
+            <summary>
+            Identificador e chave do banco
+            </summary>
+        </member>
+        <member name="P:SmartSchool.API.V1.Dtos.AlunoPatchDto.Nome">
+            <summary>
+             Nome é o primeiro e segundo nome do Aluno
             </summary>
         </member>
         <member name="T:SmartSchool.API.V1.Dtos.AlunoRegistrarDto">

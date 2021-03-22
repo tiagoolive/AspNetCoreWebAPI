@@ -74,7 +74,7 @@ namespace SmartSchool.API.Data
 
         }
 
-        public Aluno[] GetAllAlunosByDisciplinaId(int disciplinaId, bool includeProfessor = false)
+        public async Task<Aluno[]> GetAllAlunosByDisciplinaIdAsync(int disciplinaId, bool includeProfessor = false)
         {
             IQueryable<Aluno> query = _context.Alunos;
 
@@ -85,7 +85,7 @@ namespace SmartSchool.API.Data
 
             query = query.AsNoTracking().OrderBy(a => a.Id).Where(a => a.AlunoDisciplinas.Any(ad => ad.DisciplinaId == disciplinaId));
 
-            return query.ToArray();
+            return await query.ToArrayAsync();
         }
 
         public Aluno GetAlunoById(int alunoId, bool includeProfessor = false)
@@ -139,6 +139,18 @@ namespace SmartSchool.API.Data
             query = query.AsNoTracking().OrderBy(p => p.Id).Where(professor => professor.Id == professorId);
 
             return query.FirstOrDefault();
+        }
+        public Professor[] GetProfessoreByAlunoId(int alunoId, bool includeAlunos = false)
+        {
+            IQueryable<Professor> query = _context.Professores;
+            if (includeAlunos)
+            {
+                query = query.Include(p => p.Disciplinas).ThenInclude(d => d.AlunoDisciplinas).ThenInclude(ad => ad.Aluno);
+            }
+
+            query = query.AsNoTracking().OrderBy(p => p.Id).Where(p => p.Disciplinas.Any(d => d.AlunoDisciplinas.Any(ad => ad.AlunoId == alunoId)));
+
+            return query.ToArray();
         }
     }
 }
